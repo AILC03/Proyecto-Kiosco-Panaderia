@@ -1,4 +1,4 @@
-# 🥐 Panadería POS App
+# 🥐 Panadería POS App (React + Firebase)
  
 Sistema de Punto de Venta (POS) para panaderías y cafeterías, con generación de órdenes por QR y panel administrativo completo.
  
@@ -28,6 +28,8 @@ Los clientes generan pedidos desde un kiosco mediante código QR, y los cajeros 
 - Edición del carrito en tiempo real
 - Cálculo automático de subtotal, IVA y total
 - Generación e impresión de ticket
+- Registro de ventas en Firebase
+- Soporte para imágenes por URL
 ### 📦 Gestión de Productos
 - Alta, edición, activación y desactivación de productos
 ### 👨‍💼 Gestión de Empleados
@@ -48,6 +50,10 @@ La orden se carga automáticamente en caja
 Cajero edita o agrega productos (opcional)
         ↓
 Se finaliza la venta y se imprime el ticket
+        ↓
+Se guarda en Firebase
+        ↓
+Se imprime el ticket
 ```
  
 ---
@@ -63,7 +69,17 @@ Se finaliza la venta y se imprime el ticket
 | Backend     | Firebase                          |
  
 ---
- 
+## Firebase
+
+La aplicación utiliza Firebase Firestore como base de datos en tiempo real.
+
+Colecciones utilizadas:
+
+- `products` → productos del sistema
+- `employees` → usuarios administrativos
+- `sales` → registro de ventas
+---
+
 ## Arquitectura del proyecto
  
 ```
@@ -75,7 +91,7 @@ src/
 ├── components/        # Componentes reutilizables
 ├── layouts/           # Layouts (AdminLayout)
 ├── context/           # Estado global (StoreContext)
-├── services/          # Simulación de backend
+├── services/          # Backend real con Firebase (Firestore)
 │
 └── app/
     └── router.jsx     # Configuración de rutas
@@ -133,19 +149,19 @@ Contraseña:         123
  
 ## Autenticación
  
-Login básico para administradores con validación por número de empleado y contraseña contra el estado local (simulación de backend). La sesión se mantiene en `localStorage`.
+Login básico para administradores con validación por número de empleado y contraseña validación contra Firebase (colección `employees`).
  
 ---
  
 ## Roadmap
  
-- [ ] Historial de ventas
-- [ ] Integración con backend (Node.js / Firebase / API REST)
-- [ ] Base de datos real
+- [x] Historial de ventas
+- [x] Integración con backend (Node.js / Firebase / API REST)
+- [x] Base de datos real con Firebase
 - [ ] Sistema de roles (admin / cajero)
 - [ ] Reportes de ventas
 - [ ] Integración con pagos
-- [ ] Generación de tickets en PDF
+- [x] Generación de tickets en PDF
 - [ ] Escaneo de códigos de barras
 ---
  
