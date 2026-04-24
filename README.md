@@ -1,121 +1,183 @@
-🥐 Panadería POS App
+🥐 PANADERÍA POS APP
+Sistema de Punto de Venta (POS) con QR y panel administrativo
 
-Sistema de punto de venta (POS) desarrollado con React para una cafetería/panadería.
+==================================================
 
---------------------------------------------------
+📌 DESCRIPCIÓN
 
-🚀 DEMO
+Panadería POS App es una aplicación web desarrollada con React que simula un sistema completo de punto de venta (POS) para cafeterías o panaderías.
 
-(Agrega aquí tu link cuando hagas deploy)
+El sistema permite a los clientes generar pedidos mediante un código QR y a los cajeros procesarlos en una interfaz tipo caja, con opción de edición manual, gestión de productos, empleados y generación de tickets.
 
---------------------------------------------------
+Este proyecto está diseñado como una solución escalable, preparada para integrarse con un backend en el futuro.
 
-🧾 DESCRIPCIÓN
+==================================================
 
-Aplicación web que permite a clientes generar pedidos mediante QR y a cajeros procesarlos en una interfaz tipo punto de venta (POS).
+🚀 FUNCIONALIDADES PRINCIPALES
 
---------------------------------------------------
+👤 Módulo Cliente
+- Visualización de productos disponibles
+- Carrito de compra dinámico
+- Generación de código QR con el pedido
+- Interfaz simple tipo kiosco
 
-⚙️ FUNCIONALIDADES
-
-👤 Cliente
-- Visualización de productos
-- Carrito de compra
-- Generación de código QR
-
-🧑‍💼 Administrador
+🧑‍💼 Módulo Administrador (POS)
 - Login de empleados
-- Escaneo de QR
-- Venta manual (tipo caja)
-- Gestión de productos (CRUD)
-- Gestión de empleados (CRUD)
+- Escaneo de QR para cargar pedidos
+- Venta manual (agregar productos sin QR)
+- Edición del carrito en tiempo real
+- Cálculo automático de subtotal, IVA y total
 - Generación de ticket
 - Impresión de ticket
 
---------------------------------------------------
+📦 Gestión de Productos
+- Alta de productos
+- Edición de productos
+- Activación / desactivación
+
+👨‍💼 Gestión de Empleados
+- Alta de empleados
+- Edición de empleados
+- Activación / desactivación
+
+==================================================
 
 🔄 FLUJO DEL SISTEMA
 
-1. Cliente selecciona productos
-2. Se genera un QR con la orden
-3. Cajero escanea el QR
-4. Se carga la venta en el sistema
-5. Puede modificar o agregar productos
-6. Finaliza la venta
-7. Se genera ticket
+1. El cliente selecciona productos en el kiosco
+2. Se genera un código QR con la orden
+3. El cajero escanea el QR desde el panel admin
+4. La orden se carga automáticamente en la caja
+5. El cajero puede modificar la venta o agregar productos
+6. Se finaliza la venta
+7. Se genera un ticket imprimible
 
---------------------------------------------------
+==================================================
 
-🛠️ TECNOLOGÍAS
+🛠️ TECNOLOGÍAS UTILIZADAS
 
+Frontend:
 - React
 - Vite
 - TailwindCSS
 - React Router
-- html5-qrcode
 
---------------------------------------------------
+Librerías:
+- html5-qrcode (escaneo de QR)
 
-📂 ESTRUCTURA DEL PROYECTO
+Estado:
+- Context API
+- localStorage (simulación de persistencia)
+
+==================================================
+
+📂 ARQUITECTURA DEL PROYECTO
 
 src/
 │
 ├── pages/
-│   ├── client/
-│   └── admin/
+│   ├── client/        → interfaz de usuario (kiosco)
+│   └── admin/         → panel de administración (POS)
 │
-├── components/
-├── layouts/
-├── context/
-├── services/
+├── components/        → componentes reutilizables
+├── layouts/           → layouts (AdminLayout)
+├── context/           → estado global (StoreContext)
+├── services/          → simulación de backend
+│
+└── app/
+    └── router.jsx     → configuración de rutas
 
---------------------------------------------------
+==================================================
 
 🔐 AUTENTICACIÓN
 
-Sistema básico de login basado en empleados almacenados en localStorage.
+El sistema incluye un login básico para administradores basado en:
 
---------------------------------------------------
+- Número de empleado
+- Contraseña
+- Validación contra estado local (simulación backend)
 
-📸 CAPTURAS
+La sesión se guarda en localStorage.
 
-(Aquí puedes agregar imágenes del sistema)
+==================================================
 
---------------------------------------------------
+📸 CAPTURAS DEL SISTEMA
 
-🚀 INSTALACIÓN
+(Aquí puedes agregar imágenes)
+
+Ejemplo:
+- Menú cliente
+- Carrito
+- Generación de QR
+- Panel de administración
+- Ticket
+
+==================================================
+
+⚙️ INSTALACIÓN Y EJECUCIÓN
+
+1. Clonar repositorio:
 
 git clone https://github.com/TU_USUARIO/TU_REPO.git
+
+2. Entrar al proyecto:
+
 cd panaderia-app
+
+3. Instalar dependencias:
+
 npm install
+
+4. Ejecutar servidor:
+
 npm run dev
 
---------------------------------------------------
+==================================================
 
-📱 RUTAS
+📱 RUTAS PRINCIPALES
 
-Cliente: /client/menu
-Admin: /admin/login
+Cliente:
+- /client/menu
 
---------------------------------------------------
+Administrador:
+- /admin/login
+
+==================================================
 
 🔐 CREDENCIALES DE PRUEBA
 
-Empleado: 123
+Número de empleado: 123
 Contraseña: 123
 
---------------------------------------------------
+==================================================
 
-🚀 PRÓXIMAS MEJORAS
+🚀 ROADMAP / MEJORAS FUTURAS
 
 - Historial de ventas
-- Backend con base de datos
-- Roles de usuario
-- Reportes
+- Integración con backend (Node.js / Firebase / API REST)
+- Base de datos real
+- Sistema de roles (admin / cajero)
+- Reportes de ventas
 - Integración con pagos
+- Generación de tickets en PDF
+- Escaneo de códigos de barras
 
---------------------------------------------------
+==================================================
+
+💡 PROPÓSITO DEL PROYECTO
+
+Este proyecto fue desarrollado como práctica de:
+
+- Arquitectura frontend escalable
+- Manejo de estado global
+- Simulación de sistemas reales (POS)
+- Integración de hardware (cámara / QR)
+- UX tipo aplicación comercial
+
+==================================================
 
 👨‍💻 AUTOR
 
 Angel Ivan Lopez Calvillo
+
+==================================================
