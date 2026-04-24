@@ -100,7 +100,19 @@ npm run dev
 ```
  
 ---
- 
+## Usarlo desde Celular con ngrok
+Despues de hacer :
+```bash
+npm run dev
+```
+Para usar este software desde un dispositivo móvil tendremos que usar Ngrok. Abriremos otra terminal y escribiremos el comando :
+```bash
+# N corresponde a el puerto en el que esta corriendo
+npx ngrok http N 
+```
+Tomaremos la linea "Fowarding" y abriremos el link que aparece ahí desde el dispositivo móvil 
+
+---
 ## Rutas principales
  
 | Módulo       | Ruta           |
