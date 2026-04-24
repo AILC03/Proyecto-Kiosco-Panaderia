@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "firebase": "^12.12.1",
     "html5-qrcode": "^2.3.8",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-qr-code": "^2.0.18",
     "react-router-dom": "^7.14.2"
   },
   "devDependencies": {

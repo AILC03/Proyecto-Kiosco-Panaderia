@@ -1,28 +1,29 @@
-import { useContext, useState } from "react";
-import { StoreContext } from "../../context/store";
+import { useEffect, useState } from "react";
+import { employeeService } from "../../services/employeeService";
 
 export default function Employees() {
-  const { employees, setEmployees } = useContext(StoreContext);
-
-  const [showForm, setShowForm] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [editId, setEditId] = useState(null);
+  const [employees, setEmployees] = useState([]);
 
   const [form, setForm] = useState({
-    number: "",
     name: "",
-    lastNameP: "",
-    lastNameM: "",
+    number: "",
     password: ""
   });
 
-  const toggleEmpleado = (id) => {
-    const updated = employees.map(e =>
-      e.id === id ? { ...e, active: !e.active } : e
-    );
-    setEmployees(updated);
+  const [editingId, setEditingId] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+
+  // 🔄 cargar empleados
+  const loadEmployees = async () => {
+    const data = await employeeService.getAll();
+    setEmployees(data);
   };
 
+  useEffect(() => {
+    loadEmployees();
+  }, []);
+
+  // ✏️ inputs
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -30,199 +31,163 @@ export default function Employees() {
     });
   };
 
-  const editarEmpleado = (e) => {
-    setForm({
-      number: e.number,
-      name: e.name,
-      lastNameP: e.lastNameP,
-      lastNameM: e.lastNameM,
-      password: e.password
-    });
+  // ➕ crear o editar
+  const handleSubmit = async () => {
+    if (!form.name || !form.number || !form.password) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
 
-    setEditId(e.id);
-    setEditMode(true);
-    setShowForm(true);
-  };
-
-  const resetForm = () => {
-    setForm({
-      number: "",
-      name: "",
-      lastNameP: "",
-      lastNameM: "",
-      password: ""
-    });
-
-    setEditMode(false);
-    setEditId(null);
-    setShowForm(false);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (editMode) {
-      console.log("Editar empleado:", form);
-
-      const updated = employees.map(emp =>
-        emp.id === editId ? { ...emp, ...form } : emp
-      );
-
-      setEmployees(updated);
+    if (editingId) {
+      await employeeService.update(editingId, form);
     } else {
-      console.log("Crear empleado:", form);
-
-      const newEmployee = {
-        id: Date.now(),
-        ...form,
-        active: true
-      };
-
-      setEmployees([...employees, newEmployee]);
+      await employeeService.create(form);
     }
 
     resetForm();
+    loadEmployees();
+  };
+
+  // ✏️ editar
+  const handleEdit = (emp) => {
+    setForm({
+      name: emp.name,
+      number: emp.number,
+      password: emp.password
+    });
+
+    setEditingId(emp.id);
+    setShowForm(true);
+  };
+
+  // 🧹 limpiar
+  const resetForm = () => {
+    setForm({
+      name: "",
+      number: "",
+      password: ""
+    });
+
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  // 🔁 activar/desactivar
+  const toggleActive = async (emp) => {
+    await employeeService.toggleActive(emp.id, emp.active);
+    loadEmployees();
   };
 
   return (
-    <div className="min-h-screen bg-crema p-4">
+    <div className="bg-white p-4 rounded-xl shadow">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Empleados</h1>
+      <div className="flex justify-between mb-4">
+        <h2 className="font-bold text-lg">Empleados</h2>
 
         <button
-          onClick={() => {
-            setShowForm(true);
-            setEditMode(false);
-          }}
-          className="bg-cafe text-white px-4 py-2 rounded"
+          onClick={() => setShowForm(!showForm)}
+          className="bg-cafe text-white px-3 py-1 rounded"
         >
-          + Agregar empleado
+          + Agregar
         </button>
       </div>
 
-      {/* LISTA */}
-      <div className="bg-white rounded-xl shadow p-4 space-y-3">
+      {/* FORMULARIO */}
+      {showForm && (
+        <div className="mb-4 space-y-2 border p-3 rounded">
 
-        {employees.map(e => (
+          <input
+            name="name"
+            placeholder="Nombre"
+            value={form.name}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
+
+          <input
+            name="number"
+            placeholder="Número"
+            value={form.number}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
+
+          <input
+            name="password"
+            placeholder="Contraseña"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleSubmit}
+              className="bg-green-600 text-white px-3 py-1 rounded w-full"
+            >
+              {editingId ? "Actualizar" : "Guardar"}
+            </button>
+
+            <button
+              onClick={resetForm}
+              className="bg-gray-400 text-white px-3 py-1 rounded w-full"
+            >
+              Cancelar
+            </button>
+          </div>
+
+        </div>
+      )}
+
+      {/* LISTA */}
+      <div className="space-y-2">
+
+        {employees.length === 0 && (
+          <p className="text-gray-400 text-sm">
+            No hay empleados
+          </p>
+        )}
+
+        {employees.map(emp => (
           <div
-            key={e.id}
-            className="flex justify-between items-center border-b pb-2"
+            key={emp.id}
+            className="flex justify-between items-center border p-2 rounded"
           >
+
             <div>
-              <p className="font-medium">
-                {e.name} {e.lastNameP}
-              </p>
-              <p className="text-sm text-gray-500">
-                #{e.number}
+              <p className="font-medium">{emp.name}</p>
+              <p className="text-xs text-gray-500">
+                #{emp.number}
               </p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
 
               <button
-                onClick={() => editarEmpleado(e)}
-                className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                onClick={() => handleEdit(emp)}
+                className="text-blue-500 text-xs"
               >
                 Editar
               </button>
 
               <button
-                onClick={() => toggleEmpleado(e.id)}
-                className={`px-3 py-1 rounded text-white text-sm ${
-                  e.active ? "bg-green-600" : "bg-gray-400"
+                onClick={() => toggleActive(emp)}
+                className={`px-2 py-1 text-xs rounded ${
+                  emp.active
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-400 text-white"
                 }`}
               >
-                {e.active ? "Activo" : "Inactivo"}
+                {emp.active ? "Activo" : "Inactivo"}
               </button>
 
             </div>
+
           </div>
         ))}
 
       </div>
-
-      {/* FORM */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-
-          <div className="bg-white p-6 rounded-xl w-full max-w-md">
-
-            <h2 className="text-lg font-bold mb-3">
-              {editMode ? "Editar empleado" : "Nuevo empleado"}
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-
-              <input
-                name="number"
-                placeholder="Número"
-                value={form.number}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-
-              <input
-                name="name"
-                placeholder="Nombre"
-                value={form.name}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-
-              <input
-                name="lastNameP"
-                placeholder="Apellido paterno"
-                value={form.lastNameP}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-
-              <input
-                name="lastNameM"
-                placeholder="Apellido materno"
-                value={form.lastNameM}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-
-              <input
-                type="password"
-                name="password"
-                placeholder="Contraseña"
-                value={form.password}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-
-              <div className="flex gap-2 mt-4">
-
-                <button
-                  type="submit"
-                  className="flex-1 bg-green-600 text-white py-2 rounded"
-                >
-                  Guardar
-                </button>
-
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="flex-1 bg-gray-400 text-white py-2 rounded"
-                >
-                  Cancelar
-                </button>
-
-              </div>
-
-            </form>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );

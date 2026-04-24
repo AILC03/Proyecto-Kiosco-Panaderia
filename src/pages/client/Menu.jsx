@@ -1,46 +1,67 @@
 import { useContext, useState } from "react";
-import { StoreContext } from "../../context/store";
+import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Menu() {
-  const { products, cart, setCart } = useContext(StoreContext);
+  const { products, cart, addToCart } = useContext(StoreContext);
   const [categoria, setCategoria] = useState("Todo");
   const navigate = useNavigate();
 
-  const categorias = ["Todo", ...new Set(products.map(p => p.category))];
+  // 🧠 categorías seguras (evita undefined)
+  const categorias = [
+    "Todo",
+    ...new Set(products.map(p => p.category || "Sin categoría"))
+  ];
 
+  // 🧠 productos visibles
   const visibles =
     categoria === "Todo"
       ? products.filter(p => p.active)
-      : products.filter(p => p.category === categoria && p.active);
+      : products.filter(
+          p =>
+            (p.category || "Sin categoría") === categoria &&
+            p.active
+        );
 
+  // ➕ agregar (usa context correcto)
   const agregar = (producto) => {
-    setCart(prev => ({
-      ...prev,
-      [producto.id]: (prev[producto.id] || 0) + 1
-    }));
+    addToCart(producto);
   };
 
-  const totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
+  // 🧮 total items (cart es array)
+  const totalItems = cart.reduce((sum, p) => sum + p.qty, 0);
 
-  const totalPrecio = Object.entries(cart).reduce((sum, [id, qty]) => {
-    const p = products.find(x => x.id === Number(id));
-    return sum + (p ? p.price * qty : 0);
-  }, 0);
+  // 💰 total precio
+  const totalPrecio = cart.reduce(
+    (sum, p) => sum + p.price * p.qty,
+    0
+  );
 
   return (
     <div className="min-h-screen bg-crema flex justify-center">
-
       <div className="w-full max-w-md mx-auto px-3 flex flex-col relative pb-28">
 
         {/* HEADER */}
-        <div className="bg-cafe text-white p-4 flex items-center gap-3 rounded-b-xl">
-          <span className="text-3xl">🥖</span>
-          <div>
-            <h1 className="text-lg font-bold">La Panadería</h1>
-            <p className="text-xs opacity-80">Ordena y recoge en caja</p>
-          </div>
-        </div>
+        <div className="bg-cafe text-white p-4 flex justify-between items-center rounded-b-xl">
+
+  {/* IZQUIERDA */}
+  <button
+    onClick={() => navigate("/")}
+    className="text-sm"
+  >
+    ← Salir
+  </button>
+
+  {/* CENTRO */}
+  <div className="flex items-center gap-2">
+    <span className="text-2xl">🥖</span>
+    <h1 className="text-lg font-bold">Panadería Tecnológico</h1>
+  </div>
+
+  {/* ESPACIO */}
+  <div className="w-10" />
+
+</div>
 
         {/* CATEGORÍAS */}
         <div className="flex gap-2 py-3 overflow-x-auto">
@@ -49,9 +70,11 @@ export default function Menu() {
               key={cat}
               onClick={() => setCategoria(cat)}
               className={`px-4 py-1 rounded-full text-sm whitespace-nowrap
-                ${categoria === cat
-                  ? "bg-cafe text-white"
-                  : "border border-borde text-gray-600"}`}
+                ${
+                  categoria === cat
+                    ? "bg-cafe text-white"
+                    : "border border-borde text-gray-600"
+                }`}
             >
               {cat}
             </button>
@@ -59,35 +82,42 @@ export default function Menu() {
         </div>
 
         {/* PRODUCTOS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pb-4">
-          {visibles.map(p => (
-            <div
-              key={p.id}
-              className="bg-white rounded-xl shadow-sm border border-borde p-3 flex flex-col"
-            >
-              <div className="h-20 flex items-center justify-center text-3xl bg-cafe-cl rounded-md">
-                {p.emoji}
-              </div>
+        <div className="grid grid-cols-2 gap-3 pb-4">
+          {visibles.map(p => {
+            const item = cart.find(x => x.id === p.id);
 
-              <div className="mt-2">
-                <p className="text-sm font-medium">{p.name}</p>
-                <p className="text-cafe text-sm font-semibold">
-                  ${p.price}
-                </p>
-              </div>
-
-              {/* BOTÓN CORREGIDO */}
-              <button
-                onClick={() => agregar(p)}
-                className="mt-2 py-1 rounded text-sm bg-cafe text-white hover:bg-cafe-osc transition"
+            return (
+              <div
+                key={p.id}
+                className="bg-white rounded-xl shadow-sm border border-borde p-3 flex flex-col"
               >
-                {cart[p.id] ? `Agregar (${cart[p.id]})` : "Agregar"}
-              </button>
-            </div>
-          ))}
+                <div className="h-20">
+  <img
+    src={p.image || "https://via.placeholder.com/80"}
+    alt={p.name}
+    className="w-full h-full object-cover rounded-md"
+  />
+</div>
+
+                <div className="mt-2">
+                  <p className="text-sm font-medium">{p.name}</p>
+                  <p className="text-cafe text-sm font-semibold">
+                    ${p.price}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => agregar(p)}
+                  className="mt-2 py-1 rounded text-sm bg-cafe text-white"
+                >
+                  {item ? `Agregar (${item.qty})` : "Agregar"}
+                </button>
+              </div>
+            );
+          })}
         </div>
 
-        {/* BARRA CARRITO */}
+        {/* CARRITO */}
         {totalItems > 0 && (
           <div
             onClick={() => navigate("/client/cart")}
@@ -102,7 +132,9 @@ export default function Menu() {
                 <span>Ver pedido</span>
               </div>
 
-              <span className="font-semibold">${totalPrecio.toFixed(2)}</span>
+              <span className="font-semibold">
+                ${totalPrecio.toFixed(2)}
+              </span>
             </div>
           </div>
         )}

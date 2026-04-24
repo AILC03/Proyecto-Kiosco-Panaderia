@@ -1,26 +1,13 @@
 import { useContext } from "react";
-import { StoreContext } from "../../context/store";
+import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-  const { cart, setCart, products } = useContext(StoreContext);
+  const { cart, updateQty } = useContext(StoreContext);
   const navigate = useNavigate();
 
-  const items = Object.entries(cart).map(([id, qty]) => {
-    const product = products.find(p => p.id === Number(id));
-    return { ...product, qty };
-  });
-
-  const cambiarCantidad = (id, delta) => {
-    setCart(prev => {
-      const nuevo = { ...prev, [id]: (prev[id] || 0) + delta };
-      if (nuevo[id] <= 0) delete nuevo[id];
-      return nuevo;
-    });
-  };
-
-  // 🔥 Precio incluye IVA
-  const total = items.reduce((acc, i) => acc + i.price * i.qty, 0);
+  // 💰 cálculos
+  const total = cart.reduce((acc, p) => acc + p.price * p.qty, 0);
   const subtotal = total / 1.16;
   const iva = total - subtotal;
 
@@ -40,18 +27,22 @@ export default function Cart() {
         {/* LISTA */}
         <div className="flex flex-col gap-3 mt-4">
 
-          {items.length === 0 && (
+          {cart.length === 0 && (
             <p className="text-center text-gray-500 mt-10">
               Tu carrito está vacío
             </p>
           )}
 
-          {items.map(item => (
+          {cart.map(item => (
             <div
               key={item.id}
               className="bg-white p-3 rounded-xl shadow-sm border flex items-center gap-3"
             >
-              <div className="text-2xl">{item.emoji}</div>
+              <img
+  src={item.image || "https://via.placeholder.com/50"}
+  alt={item.name}
+  className="w-12 h-12 object-cover rounded"
+/>
 
               <div className="flex-1">
                 <p className="text-sm font-medium">{item.name}</p>
@@ -62,7 +53,7 @@ export default function Cart() {
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => cambiarCantidad(item.id, -1)}
+                  onClick={() => updateQty(item.id, item.qty - 1)}
                   className="w-7 h-7 border rounded-full"
                 >
                   −
@@ -71,7 +62,7 @@ export default function Cart() {
                 <span>{item.qty}</span>
 
                 <button
-                  onClick={() => cambiarCantidad(item.id, 1)}
+                  onClick={() => updateQty(item.id, item.qty + 1)}
                   className="w-7 h-7 border rounded-full"
                 >
                   +
@@ -86,7 +77,7 @@ export default function Cart() {
         </div>
 
         {/* FOOTER */}
-        {items.length > 0 && (
+        {cart.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
             <div className="max-w-md mx-auto">
 
@@ -107,13 +98,8 @@ export default function Cart() {
                 </div>
               </div>
 
-              {/* 🔥 PASAMOS LOS ITEMS AL QR */}
               <button
-                onClick={() =>
-                  navigate("/client/qr", {
-                    state: { items }
-                  })
-                }
+                onClick={() => navigate("/client/qr")}
                 className="w-full bg-cafe text-white py-3 rounded-xl text-lg"
               >
                 Generar código QR

@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
-import { StoreContext } from "../../context/store";
+import { StoreContext } from "../../context/StoreContext";
 import Scanner from "./Scanner";
 import Ticket from "../../components/Ticket";
+import { salesService } from "../../services/salesService";
 
 export default function Dashboard() {
   const { products } = useContext(StoreContext);
@@ -17,11 +18,15 @@ export default function Dashboard() {
 
   // 📷 cuando escanea QR
   const handleScan = (order) => {
-    const items = order.items.map(i => {
-      const product = products.find(p => p.id === i.id);
-      return { ...product, qty: i.qty };
-    });
+    const items = order.items
+  .map(i => {
+    const product = products.find(p => p.id === i.id);
 
+    if (!product) return null; // evita error
+
+    return { ...product, qty: i.qty };
+  })
+  .filter(Boolean); // limpia nulls
     setCart(items);
   };
 
@@ -51,10 +56,25 @@ export default function Dashboard() {
   const iva = total - subtotal;
 
   // ✅ finalizar
-  const finalizar = () => {
-    if (cart.length === 0) return;
-    setShowTicket(true);
+  const finalizar = async () => {
+  if (cart.length === 0) return;
+
+  const saleData = {
+    items: cart.map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      qty: p.qty
+    })),
+    subtotal,
+    iva,
+    total
   };
+
+  await salesService.create(saleData);
+
+  setShowTicket(true);
+};
 
   // 🔍 filtrar productos
   const filteredProducts = products.filter(p =>
@@ -174,7 +194,7 @@ export default function Dashboard() {
               onClick={() => window.print()}
               className="mt-2 w-full bg-blue-500 text-white py-2 rounded"
             >
-              Imprimir
+              Imprimir comprobante
             </button>
 
             <button
