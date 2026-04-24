@@ -60,7 +60,7 @@ Se finaliza la venta y se imprime el ticket
 | Enrutamiento | React Router                     |
 | QR          | html5-qrcode                      |
 | Estado      | Context API                       |
-| Persistencia | localStorage (simulación backend) |
+| Backend     | Firebase                          |
  
 ---
  
