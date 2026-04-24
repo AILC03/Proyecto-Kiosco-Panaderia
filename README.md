@@ -87,7 +87,7 @@ src/
  
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/TU_USUARIO/TU_REPO.git
+git clone https://github.com/AILC03/Proyecto-Kiosco-Panaderia.git
  
 # 2. Entrar al proyecto
 cd panaderia-app
