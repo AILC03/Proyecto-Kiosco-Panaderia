@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-crema gap-6">
 
       <h1 className="text-2xl font-bold text-cafe">
-        Bienvenido
+        Bienvenido a Panadería Tecnológico
       </h1>
 
       {/* CLIENTE */}

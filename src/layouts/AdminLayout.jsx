@@ -12,7 +12,7 @@ export default function AdminLayout() {
   // 🔐 logout
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/admin/login");
+    navigate("/");
   };
 
   return (
@@ -22,8 +22,7 @@ export default function AdminLayout() {
       <header className="bg-cafe text-white px-4 py-3 flex justify-between items-center shadow">
 
         <h1 className="font-bold text-lg">
-          🥖 Admin Panadería
-        </h1>
+          Panadería Tecnológico        </h1>
 
         <div className="flex items-center gap-6">
 
@@ -42,6 +41,14 @@ export default function AdminLayout() {
               className={isActive("/admin/products")}
             >
               Productos
+            </button>
+
+
+            <button
+              onClick={() => navigate("/admin/Sales")}
+              className={isActive("/admin/Sales")}
+            >
+              Ventas
             </button>
 
             <button

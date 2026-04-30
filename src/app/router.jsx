@@ -14,6 +14,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import Products from "../pages/admin/Products";
 import Employees from "../pages/admin/Employees";
 import Login from "../pages/admin/Login";
+import Sales from "../pages/admin/Sales";
 
 // protección
 import PrivateRoute from "../components/PrivateRoute";
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
       {
         path: "employees",
         element: <Employees />
+      },
+      {
+        path: "sales",
+        element: <Sales />
       }
     ]
   },
