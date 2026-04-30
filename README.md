@@ -158,11 +158,9 @@ Login básico para administradores con validación por número de empleado y con
 - [x] Historial de ventas
 - [x] Integración con backend (Node.js / Firebase / API REST)
 - [x] Base de datos real con Firebase
-- [ ] Sistema de roles (admin / cajero)
-- [ ] Reportes de ventas
+- [x] Reportes de ventas
 - [ ] Integración con pagos
 - [x] Generación de tickets en PDF
-- [ ] Escaneo de códigos de barras
 ---
  
 ## Propósito del proyecto
